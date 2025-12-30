@@ -1,0 +1,310 @@
+SQL  ASSIGNMENT
+
+Q.1 Create a new database named school_db and a table called students with the following columns: student_id, student_name, age, class, and address.
+ANS. 
+CREATE DATABASE school_db;
+USE school_db;
+
+CREATE TABLE students (
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_name VARCHAR(100),
+    age INT,
+    class VARCHAR(20),
+    address VARCHAR(255)
+);
+Q.2 Insert five records into the students table and retrieve all records using the SELECT statement.
+ANS.  
+INSERT INTO students (student_name, age, class, address) VALUES
+('Rahul Sharma', 15, '10th', 'Ahmedabad'),
+('Priya Patel', 14, '9th', 'Surat'),
+('Amit Verma', 16, '11th', 'Vadodara'),
+('Neha Singh', 15, '10th', 'Rajkot'),
+('Karan Mehta', 13, '8th', 'Bhavnagar');
+
+	retrieve all records using the SELECT statement.
+
+SELECT * FROM students;
+
+
+Q.3 Write SQL queries to retrieve specific columns (student_name and age) from the students table.
+ANS. 
+	SELECT student_name, age FROM students;
+
+Q.4 Write SQL queries to retrieve all students whose age is greater than 10.
+ANS. 
+	FROM students WHERE age > 10;
+
+Q.5 Create a table teachers with the following columns: teacher_id (Primary Key), teacher_name (NOT NULL), subject (NOT NULL), and email (UNIQUE).
+ANS. 
+	CREATE TABLE teachers (
+    	teacher_id INT PRIMARY KEY AUTO_INCREMENT,
+  	 teacher_name VARCHAR(100) NOT NULL,
+   	subject VARCHAR(50) NOT NULL,
+    	email VARCHAR(100) UNIQUE
+);
+Q.6 Implement a FOREIGN KEY constraint to relate the teacher_id from the teachers table with the students table.
+ANS. 
+	ALTER TABLE students
+ADD teacher_id INT;
+
+ALTER TABLE students
+ADD CONSTRAINT fk_teacher
+FOREIGN KEY (teacher_id)
+REFERENCES teachers(teacher_id);
+
+
+Q.7  Create a table courses with columns: course_id, course_name, and course_credits. Set the course_id as the primary key.
+ANS. 
+	CREATE TABLE courses (
+    course_id INT PRIMARY KEY,
+    course_name VARCHAR(100),
+    course_credits INT
+);
+
+
+Q.8  Use the CREATE command to create a database university_db.
+ANS. 
+	CREATE DATABASE university_db;
+
+
+Q.9 Modify the courses table by adding a column course_duration using the ALTER.
+ANS. 
+	ALTER TABLE courses
+ADD course_duration VARCHAR(50);
+
+Q.10 Drop the course_credits column from the courses table.
+ANS. 
+	ALTER TABLE courses
+DROP COLUMN course_credits;
+
+Q.11  Drop the teachers table from the school_db database.
+ANS. 
+DROP TABLE teachers;
+
+Q.12 Drop the students table from the school_db database and verify that the table has been removed.
+ANS. 
+	DROP TABLE students;
+-> verify that the table has been removed.
+	SHOW TABLES;
+Q.13  Insert three records into the courses table using the INSERT command.
+ANS. 
+INSERT INTO courses (course_id, course_name, course_duration) VALUES
+(101, 'Computer Science', '3 Years'),
+(102, 'Information Technology', '3 Years'),
+(103, 'Electronics Engineering', '4 Years');
+
+Q.14 Update the course duration of a specific course using the UPDATE command.
+ANS.
+UPDATE courses
+SET course_duration = '4 Years'
+WHERE course_id = 101;
+
+Q.15  Delete a course with a specific course_id from the courses table using the DELETE command.
+ANS.
+DELETE FROM courses 
+WHERE course_id = 103;
+
+Q.16  Retrieve all courses from the courses table using the SELECT statement.
+ANS. 
+SELECT * FROM courses;
+Q.18 Sort the courses based on course_duration in descending order using ORDER BY.
+ANS. 
+SELECT * FROM courses
+ORDER BY course_duration DESC;
+Q.19 Limit the results of the SELECT query to show only the top two courses using LIMIT. 
+ANS.
+SELECT * FROM courses
+LIMIT 2;
+
+Q.20 Insert a few rows into the courses table and use COMMIT to save the changes.
+ANS. 
+START TRANSACTION;
+INSERT INTO courses (course_id, course_name, course_duration) VALUES
+(201, 'Mechanical Engineering', '4 Years'),
+(202, 'Civil Engineering', '4 Years');
+COMMIT;
+Q.21 Insert additional rows, then use ROLLBACK to undo the last insert operation.
+ANS.
+START TRANSACTION;
+INSERT INTO courses (course_id, course_name, course_duration) VALUES
+(203, 'Electrical Engineering', '4 Years'),
+(204, 'Chemical Engineering', '4 Years');
+ROLLBACK;
+Q.22 Create a SAVEPOINT before updating the courses table, and use it to roll back specific changes. 
+ANS.
+START TRANSACTION;
+
+UPDATE courses
+SET course_duration = '5 Years'
+WHERE course_id = 201;
+
+SAVEPOINT sp1;
+
+UPDATE courses
+SET course_duration = '6 Years'
+WHERE course_id = 202;
+
+ROLLBACK TO sp1;
+
+COMMIT;
+
+Q.23 Create two tables: departments and employees. Perform an INNER JOIN to display employees along with their respective departments.
+ANS.
+CREATE TABLE departments (
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(100)
+);
+
+CREATE TABLE employees (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(100),
+    dept_id INT,
+    salary INT,
+    FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+);
+
+SELECT emp_name, dept_name
+FROM employees
+INNER JOIN departments
+ON employees.dept_id = departments.dept_id;
+	
+Q.24 Use a LEFT JOIN to show all departments, even those without employees.
+ANS. 
+SELECT departments.dept_name, employees.emp_name
+FROM departments
+LEFT JOIN employees
+ON departments.dept_id = employees.dept_id;
+
+Q.25 Group employees by department and count the number of employees in each department using GROUP BY.
+ANS.
+SELECT dept_id, COUNT(emp_id) AS total_employees  FROM employees
+GROUP BY dept_id;
+
+Q.26 Use the AVG aggregate function to find the average salary of employees in each department.
+ANS. 
+SELECT dept_id, AVG(salary) AS average_salary FROM employees
+GROUP BY dept_id;
+
+Q.27 Create a view to show all employees along with their department names.
+ANS.
+CREATE VIEW employee_department_view AS
+SELECT employees.emp_name, departments.dept_name
+FROM employees
+JOIN departments
+ON employees.dept_id = departments.dept_id;
+
+Q.28 Modify the view to exclude employees whose salaries are below 50,000.
+ANS. 
+CREATE OR REPLACE VIEW employee_department_view AS
+SELECT employees.emp_name, departments.dept_name
+FROM employees
+JOIN departments
+ON employees.dept_id = departments.dept_id
+WHERE employees.salary >= 50000;
+
+Q.29 Create a trigger to automatically log changes to the employees table when a new employee is added.
+ANS. 
+CREATE TABLE employee_log (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    emp_id INT,
+    action_time TIMESTAMP
+);
+
+DELIMITER //
+
+CREATE TRIGGER after_employee_insert
+AFTER INSERT ON employees
+FOR EACH ROW
+BEGIN
+    INSERT INTO employee_log (emp_id, action_time)
+    VALUES (NEW.emp_id, NOW());
+END //
+
+DELIMITER ;
+
+Q.30 Create a trigger to update the last_modified timestamp whenever an employee record is updated.
+ANS. 
+ALTER TABLE employees
+ADD last_modified TIMESTAMP;
+DELIMITER //
+CREATE TRIGGER before_employee_update
+BEFORE UPDATE ON employees
+FOR EACH ROW
+BEGIN
+    SET NEW.last_modified = NOW();
+END //
+DELIMITER ;
+
+Q.31 Write a PL/SQL block to print the total number of employees from the employees table.
+ANS.
+DECLARE
+    total_emp NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO total_emp FROM employees;
+    DBMS_OUTPUT.PUT_LINE('Total Employees: ' || total_emp);
+END;
+/
+Q.32 Create a PL/SQL block that calculates the total sales from an orders table.
+ANS.
+DECLARE
+    total_sales NUMBER;
+BEGIN
+    SELECT SUM(amount) INTO total_sales FROM orders;
+    DBMS_OUTPUT.PUT_LINE('Total Sales: ' || total_sales);
+END;
+/
+Q.33 Write a PL/SQL block using IF-THEN condition to check the department of an employee.
+ANS.
+DECLARE
+    d_id employees.dept_id%TYPE;
+BEGIN
+    SELECT dept_id INTO d_id FROM employees WHERE emp_id = 1;
+
+    IF d_id = 10 THEN
+        DBMS_OUTPUT.PUT_LINE('Employee belongs to IT department');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Employee belongs to another department');
+    END IF;
+END;
+/
+Q.34 Use a FOR LOOP to iterate through employee records and display their names.
+ANS. 
+BEGIN
+    FOR emp IN (SELECT emp_name FROM employees) LOOP
+        DBMS_OUTPUT.PUT_LINE(emp.emp_name);
+    END LOOP;
+END;
+/
+Q.35 Write a PL/SQL block using an explicit cursor to retrieve and display employee details.
+ANS.
+DECLARE
+    CURSOR emp_cursor IS SELECT emp_name FROM employees;
+    emp_name employees.emp_name%TYPE;
+BEGIN
+    OPEN emp_cursor;
+    LOOP
+        FETCH emp_cursor INTO emp_name;
+        EXIT WHEN emp_cursor%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE(emp_name);
+    END LOOP;
+    CLOSE emp_cursor;
+END;
+/
+Q.36 Create a cursor to retrieve all courses and display them one by one.
+ANS.
+DECLARE
+    CURSOR course_cursor IS SELECT course_name FROM courses;
+    c_name courses.course_name%TYPE;
+BEGIN
+    FOR c IN course_cursor LOOP
+        DBMS_OUTPUT.PUT_LINE(c.course_name);
+    END LOOP;
+END;
+/ 
+
+
+
+
+
+
+
